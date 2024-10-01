@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkçe Sesli Komut</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 100px;
+        }
+        #start-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #start-btn:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Türkçe Konuşmayı Metne Çevir</h1>
+
+    <button id="start-btn">Başlat</button>
+    <div id="result">Burada konuşmanızı göreceksiniz...</div>
+
+    <script>
+        // SpeechRecognition API tanımlama
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        // Türkçe dilini ayarlama
+        recognition.lang = 'tr-TR';
+        recognition.interimResults = true;  // Anlık sonuçları almak için
+
+        const startBtn = document.getElementById('start-btn');
+        const resultDiv = document.getElementById('result');
+
+        // Dinlemeyi başlatma
+        startBtn.addEventListener('click', () => {
+            recognition.start();
+            startBtn.disabled = true;
+            startBtn.textContent = "Dinleniyor...";
+        });
+
+        // Konuşma tespit edildiğinde anlık olarak metne çevirme
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            resultDiv.textContent = transcript;  // Çevirilen metni ekrana yazdırma
+        };
+
+        // Dinleme bittiğinde butonu tekrar etkinleştirme
+        recognition.onend = () => {
+            startBtn.disabled = false;
+            startBtn.textContent = "Başlat";
+        };
+
+        // Hata durumunda uyarı verme
+        recognition.onerror = (event) => {
+            console.error(event.error);
+            alert("Bir hata oluştu: " + event.error);
+            startBtn.disabled = false;
+            startBtn.textContent = "Başlat";
+        };
+    </script>
+
+</body>
+</html>
